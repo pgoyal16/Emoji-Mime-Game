@@ -84,7 +84,6 @@ def main():
                 st.warning("Please enter your answer.")
         else:
             time.sleep(1)
-            st.experimental_rerun()
     else:
         st.markdown(f"**{st.session_state.feedback}**")
         if st.button("Next"):
