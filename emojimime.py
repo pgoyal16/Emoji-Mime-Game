@@ -4,7 +4,7 @@ import time
 
 emojis={
     "🦁 + 👑": "Lion King",
-    "🐞 + 🔧": "Debug",
+    "🐞 + 🔧": "Debug", 
     "🦇 + 👨": "Batman",
     "🧠 + 💾": "Memory",
     "🔥 + 🚒": "Fire Truck",
@@ -22,12 +22,13 @@ emojis={
 timer=30
 
 def init_game():
-    st.session_state.questions=random.sample(list(emojis.items()), len(emojis))
-    st.session_state.index=0
-    st.session_state.started=True
-    st.session_state.feedback=""
-    st.session_state.start_time=time.time()
-    st.session_state.answered=False
+    st.session_state.questions = random.sample(list(emojis.items()), len(emojis))
+    st.session_state.index = 0
+    st.session_state.started = True
+    st.session_state.feedback = ""
+    st.session_state.start_time = time.time()
+    st.session_state.answered = False
+    st.session_state.score = 0
 
 def check_answer(user_ans, correct_ans):
     if user_ans.strip().lower()==correct_ans.strip().lower():
@@ -54,30 +55,37 @@ def main():
             st.rerun()
         return
 
-    if st.session_state.index>=len(st.session_state.questions):
-        st.success(f"🎉 Game Over!")
-        st.session_state.started=False
+    if st.session_state.index >= len(st.session_state.questions):
+        st.success("🎉 Game Over!")
+        total = len(st.session_state.questions)
+        score = st.session_state.get("score", 0)
+        st.markdown(f"### 🏆 Your Score: **{score} / {total}**")
+        st.session_state.started = False
         return
 
-    emoji, answer=st.session_state.questions[st.session_state.index]
+    emoji, answer = st.session_state.questions[st.session_state.index]
     st.markdown(f"<h1 style='text-align:center;font-size:72px'>{emoji}</h1>", unsafe_allow_html=True)
 
-    elapsed=int(time.time()-st.session_state.start_time)
-    time_left=max(0, timer-elapsed)
+    elapsed = int(time.time() - st.session_state.start_time)
+    time_left = max(0, timer - elapsed)
     if not st.session_state.answered:
         st.info(f"⏳ Time Left: {time_left}s")
-    if time_left==0 and not st.session_state.answered:
-        st.session_state.feedback=f"⏰ Time's up! The answer was '{answer}'."
-        st.session_state.answered=True
+        st.progress(progress)
+    if time_left == 0 and not st.session_state.answered:
+        st.session_state.feedback = f"⏰ Time's up! The answer was '{answer}'."
+        st.session_state.answered = True
 
     if not st.session_state.answered:
-        user_ans=st.text_input("Your Guess:")
+        user_ans = st.text_input("Your Guess:")
         if st.button("Submit Answer"):
             if user_ans:
                 check_answer(user_ans, answer)
                 st.rerun()
             else:
                 st.warning("Please enter your answer.")
+        else:
+            time.sleep(1)
+            st.experimental_rerun()
     else:
         st.markdown(f"**{st.session_state.feedback}**")
         if st.button("Next"):
