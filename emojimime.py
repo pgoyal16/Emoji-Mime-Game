@@ -70,7 +70,6 @@ def main():
     time_left = max(0, timer - elapsed)
     if not st.session_state.answered:
         st.info(f"⏳ Time Left: {time_left}s")
-        st.progress(progress)
     if time_left == 0 and not st.session_state.answered:
         st.session_state.feedback = f"⏰ Time's up! The answer was '{answer}'."
         st.session_state.answered = True
